@@ -4,6 +4,8 @@ import { KnockoutMatch as KnockoutMatchType, GroupId } from "@/lib/types";
 import { ALL_TEAMS } from "@/data/groups";
 import { KNOCKOUT_SCHEDULE } from "@/data/matches";
 import { useLoadedTournament } from "./TournamentContext";
+import { useTimezone } from "./TimezoneContext";
+import { convertMatchTime } from "@/lib/timeUtils";
 
 interface KnockoutMatchProps {
   match: KnockoutMatchType;
@@ -142,7 +144,11 @@ export function KnockoutMatchCard({ match, compact }: KnockoutMatchProps) {
   } = useLoadedTournament();
 
   const highlighted = state.highlightedTeam;
+  const { timezone } = useTimezone();
   const schedule = KNOCKOUT_SCHEDULE[match.matchNumber];
+  const converted = schedule
+    ? convertMatchTime(schedule.date, schedule.time, timezone)
+    : null;
   const w = compact ? "w-[130px]" : "w-[160px]";
 
   const isR32ThirdPlace =
@@ -246,9 +252,9 @@ export function KnockoutMatchCard({ match, compact }: KnockoutMatchProps) {
         <span className="text-[9px] font-bold text-slate-400">
           M{match.matchNumber}
         </span>
-        {schedule && (
+        {converted && (
           <span className="text-[8px] text-slate-500">
-            {schedule.day} {schedule.date} {schedule.time}
+            {converted.day} {converted.date} {converted.time}
           </span>
         )}
       </div>

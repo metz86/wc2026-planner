@@ -4,21 +4,30 @@ import { GROUP_MATCHES } from "@/data/matches";
 import { ALL_TEAMS } from "@/data/groups";
 import { useLoadedTournament } from "./TournamentContext";
 import { usePersistedState } from "@/hooks/usePersistedState";
+import { useTimezone } from "./TimezoneContext";
+import { convertMatchTime, DEFAULT_TIMEZONE, TIMEZONES } from "@/lib/timeUtils";
 
 export function GroupStageMatches() {
   const { state } = useLoadedTournament();
   const highlighted = state.highlightedTeam;
+  const { timezone } = useTimezone();
   const [collapsed, setCollapsed] = usePersistedState("wc26-matches-collapsed", true);
   const [collapsedMDs, setCollapsedMDs] = usePersistedState<Record<number, boolean>>("wc26-matches-mds-collapsed", {});
 
   const toggleMD = (md: number) =>
     setCollapsedMDs((prev) => ({ ...prev, [md]: !prev[md] }));
 
+  const tzLabel = TIMEZONES.find((t) => t.value === timezone)?.label ?? timezone;
+
   const byMatchday = [1, 2, 3].map((md) => {
     const matches = GROUP_MATCHES.filter((m) => m.matchday === md);
-    const byDate: Record<string, typeof matches> = {};
-    for (const m of matches) {
-      const key = `${m.day} ${m.date}`;
+    const converted = matches.map((m) => {
+      const c = convertMatchTime(m.date, m.time, timezone);
+      return { ...m, displayTime: c.time, displayDate: c.date, displayDay: c.day };
+    });
+    const byDate: Record<string, typeof converted> = {};
+    for (const m of converted) {
+      const key = `${m.displayDay} ${m.displayDate}`;
       if (!byDate[key]) byDate[key] = [];
       byDate[key].push(m);
     }
@@ -41,7 +50,7 @@ export function GroupStageMatches() {
           Group Stage Matches
         </h2>
         <span className="text-xs font-normal text-slate-400">
-          {collapsed ? "Click to expand" : "All times UTC+2"}
+          {collapsed ? "Click to expand" : `Times in ${tzLabel}`}
         </span>
       </button>
 
@@ -92,7 +101,7 @@ export function GroupStageMatches() {
                                   ${anyHighlight ? "bg-yellow-400/10" : ""}
                                 `}
                               >
-                                <span className="text-slate-500 w-10 shrink-0 text-right">{m.time}</span>
+                                <span className="text-slate-500 w-10 shrink-0 text-right">{m.displayTime}</span>
                                 <span className="text-slate-600 shrink-0">|</span>
                                 <span className="w-5 shrink-0 text-center font-bold text-[10px] text-slate-500">
                                   {m.group}
