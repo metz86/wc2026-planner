@@ -3,7 +3,7 @@
 import { KnockoutMatch as KnockoutMatchType, GroupId } from "@/lib/types";
 import { ALL_TEAMS } from "@/data/groups";
 import { KNOCKOUT_SCHEDULE } from "@/data/matches";
-import { useTournamentContext } from "./TournamentContext";
+import { useLoadedTournament } from "./TournamentContext";
 
 interface KnockoutMatchProps {
   match: KnockoutMatchType;
@@ -139,7 +139,7 @@ export function KnockoutMatchCard({ match, compact }: KnockoutMatchProps) {
     clearAdvancement,
     selectThirdPlace,
     clearThirdPlace,
-  } = useTournamentContext();
+  } = useLoadedTournament();
 
   const highlighted = state.highlightedTeam;
   const schedule = KNOCKOUT_SCHEDULE[match.matchNumber];

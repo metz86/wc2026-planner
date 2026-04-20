@@ -2,10 +2,10 @@
 
 import { GroupId } from "@/lib/types";
 import { GROUP_IDS, ALL_TEAMS } from "@/data/groups";
-import { useTournamentContext } from "./TournamentContext";
+import { useLoadedTournament } from "./TournamentContext";
 
 export function ThirdPlaceSelector() {
-  const { state, setQualifyingThird } = useTournamentContext();
+  const { state, setQualifyingThird } = useLoadedTournament();
   const qualifying = state.qualifyingThirdGroups;
 
   function toggleGroup(groupId: GroupId) {

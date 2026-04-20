@@ -2,11 +2,11 @@
 
 import { GROUP_MATCHES } from "@/data/matches";
 import { ALL_TEAMS } from "@/data/groups";
-import { useTournamentContext } from "./TournamentContext";
+import { useLoadedTournament } from "./TournamentContext";
 import { usePersistedState } from "@/hooks/usePersistedState";
 
 export function GroupStageMatches() {
-  const { state } = useTournamentContext();
+  const { state } = useLoadedTournament();
   const highlighted = state.highlightedTeam;
   const [collapsed, setCollapsed] = usePersistedState("wc26-matches-collapsed", true);
   const [collapsedMDs, setCollapsedMDs] = usePersistedState<Record<number, boolean>>("wc26-matches-mds-collapsed", {});

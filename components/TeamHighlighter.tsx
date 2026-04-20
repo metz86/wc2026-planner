@@ -2,12 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ALL_TEAMS } from "@/data/groups";
-import { useTournamentContext } from "./TournamentContext";
+import { useLoadedTournament } from "./TournamentContext";
 
 const teamList = Object.values(ALL_TEAMS).sort((a, b) => a.name.localeCompare(b.name));
 
 export function TeamHighlighter() {
-  const { state, highlightTeam } = useTournamentContext();
+  const { state, highlightTeam } = useLoadedTournament();
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

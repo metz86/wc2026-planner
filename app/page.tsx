@@ -20,7 +20,7 @@ function ResetButton() {
   );
 }
 
-function App() {
+function AppShell({ children }: { children?: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
       <header className="border-b border-slate-700/50 bg-slate-900/95 sticky top-0 z-40 backdrop-blur">
@@ -29,20 +29,38 @@ function App() {
             <span className="text-emerald-400">WC 2026</span>{" "}
             <span className="text-slate-300">Schedule Planner</span>
           </h1>
-          <div className="flex items-center gap-4">
-            <TeamHighlighter />
-            <ResetButton />
-          </div>
+          {children && (
+            <div className="flex items-center gap-4">
+              <TeamHighlighter />
+              <ResetButton />
+            </div>
+          )}
         </div>
       </header>
 
       <main className="max-w-[1400px] mx-auto px-4 py-6 space-y-6">
-        <GroupStage />
-        <GroupStageMatches />
-        <ThirdPlaceSelector />
-        <KnockoutBracket />
+        {children ?? (
+          <div className="text-sm text-slate-500 animate-pulse">Loading...</div>
+        )}
       </main>
     </div>
+  );
+}
+
+function App() {
+  const { state } = useTournamentContext();
+
+  if (!state) {
+    return <AppShell />;
+  }
+
+  return (
+    <AppShell>
+      <GroupStage />
+      <GroupStageMatches />
+      <ThirdPlaceSelector />
+      <KnockoutBracket />
+    </AppShell>
   );
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTournamentContext } from "./TournamentContext";
+import { useLoadedTournament } from "./TournamentContext";
 import { KnockoutMatchCard } from "./KnockoutMatch";
 
 // Bracket paths: left side feeds SF101 → Final, right side feeds SF102 → Final
@@ -23,7 +23,7 @@ function BracketRound({
   gap: number;
   label: string;
 }) {
-  const { state } = useTournamentContext();
+  const { state } = useLoadedTournament();
 
   return (
     <div className="flex flex-col items-center shrink-0">
@@ -79,7 +79,7 @@ function BracketConnectorLeft({ pairs }: { pairs: number }) {
 }
 
 export function KnockoutBracket() {
-  const { state } = useTournamentContext();
+  const { state } = useLoadedTournament();
 
   if (!state.knockout[104]) return null;
 

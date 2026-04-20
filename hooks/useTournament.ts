@@ -93,7 +93,9 @@ function clearDownstream(
   }
 }
 
-function reducer(state: TournamentState, action: Action): TournamentState {
+function reducer(state: TournamentState | null, action: Action): TournamentState | null {
+  if (action.type === "LOAD_STATE") return action.state;
+  if (state === null) return null;
   switch (action.type) {
     case "REORDER_GROUP": {
       const newGroups = {
@@ -187,10 +189,6 @@ function reducer(state: TournamentState, action: Action): TournamentState {
       return { ...state, highlightedTeam: action.teamId };
     }
 
-    case "LOAD_STATE": {
-      return action.state;
-    }
-
     case "RESET": {
       return buildInitialState();
     }
@@ -203,9 +201,11 @@ function reducer(state: TournamentState, action: Action): TournamentState {
 const STORAGE_KEY = "wc2026-planner-state";
 
 export function useTournament() {
-  const [state, dispatch] = useReducer(reducer, null, buildInitialState);
+  const [state, dispatch] = useReducer(reducer, null);
 
+  // On mount: load from localStorage, or fall back to defaults
   useEffect(() => {
+    let initialState: TournamentState;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -216,23 +216,26 @@ export function useTournament() {
         const adv = collectAdvancements(parsed.knockout || {});
         const winners = collectSpecificWinners(parsed.knockout || {});
         const knockout = resolveKnockout(groups, qualifyingThirdGroups, adv, thirdPlaceSelections, winners);
-        dispatch({
-          type: "LOAD_STATE",
-          state: {
-            groups,
-            knockout,
-            qualifyingThirdGroups,
-            highlightedTeam: parsed.highlightedTeam || null,
-            thirdPlaceSelections,
-          },
-        });
+        initialState = {
+          groups,
+          knockout,
+          qualifyingThirdGroups,
+          highlightedTeam: parsed.highlightedTeam || null,
+          thirdPlaceSelections,
+        };
+      } else {
+        initialState = buildInitialState();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initialState));
       }
     } catch {
-      // ignore
+      initialState = buildInitialState();
     }
+    dispatch({ type: "LOAD_STATE", state: initialState });
   }, []);
 
+  // Save to localStorage on state changes (skip null)
   useEffect(() => {
+    if (state === null) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {

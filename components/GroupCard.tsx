@@ -19,7 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import { GroupId } from "@/lib/types";
 import { ALL_TEAMS } from "@/data/groups";
-import { useTournamentContext } from "./TournamentContext";
+import { useLoadedTournament } from "./TournamentContext";
 import { SortableTeam } from "./SortableTeam";
 import { usePersistedState } from "@/hooks/usePersistedState";
 
@@ -28,7 +28,7 @@ interface GroupCardProps {
 }
 
 export function GroupCard({ groupId }: GroupCardProps) {
-  const { state, reorderGroup } = useTournamentContext();
+  const { state, reorderGroup } = useLoadedTournament();
   const group = state.groups[groupId];
   const highlightedTeam = state.highlightedTeam;
   const [collapsed, setCollapsed] = usePersistedState(`wc26-group-${groupId}-collapsed`, false);
