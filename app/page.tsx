@@ -71,7 +71,7 @@ function AppShell({ children }: { children?: React.ReactNode }) {
             <span className="text-slate-300">Schedule Planner</span>
           </h1>
           {children && (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
               <TimezoneSelector />
               <TeamHighlighter />
               <ResetButton />

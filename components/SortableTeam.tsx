@@ -29,9 +29,10 @@ export function SortableTeam({ teamId, position, isHighlighted }: SortableTeamPr
     isDragging,
   } = useSortable({ id: teamId });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
+    touchAction: "none",
   };
 
   const team = ALL_TEAMS[teamId];
